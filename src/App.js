@@ -12,21 +12,66 @@ function App() {
   const [dislikedUsers, setDislikedUsers] = useState([]);
   const activeUser = 0;
 
-  switch (key) {
-    case "ADD_TO_LIKED_USER":
-      break;
-    case "ADD_TO_DISLIKED_USER":
-      break;
-    case "ADD_TO_SUPERLIKED_USER":
-      break;
+  const removedPersonFromDataSrc = (peopleSource, userId) => {
+    peopleSource.filter(user => user.id !== userId);
+  };
 
-    default:
-      return people;
-  }
+  const modifySuperficialChoices = (userId, action) => {
+    const newPeople = [...people];
+    const newLikedUsers = [...likedUsers];
+    const newSuperLikedUsers = [...superLikedUsers];
+    const newDislikedUsers = [...dislikedUsers];
+
+    switch (action) {
+      case "ADD_TO_LIKED_USER":
+        if (!people[activeUser].likedUsers.includes(userId)) {
+          newPeople[activeUser].likedUsers.push(userId);
+          newLikedUsers.push(data[userId]);
+
+          setLikedUsers(newLikedUsers);
+          setPeople(removedPersonFromDataSrc(people, userId));
+        }
+        break;
+      case "ADD_TO_DISLIKED_USER":
+        if (!people[activeUser].dislikedUsers.includes(userId)) {
+          newPeople[activeUser].dislikedUsers.push(userId);
+          newDislikedUsers.push(data[userId]);
+
+          setDislikedUsers(newDislikedUsers);
+          setPeople(removedPersonFromDataSrc(people, userId));
+        }
+        break;
+      case "ADD_TO_SUPERLIKED_USER":
+        if (!people[activeUser].superLikedUsers.includes(userId)) {
+          newPeople[activeUser].superLikedUsers.push(userId);
+          newSuperLikedUsers.push(data[userId]);
+
+          setSuperLikedUsers(newSuperLikedUsers);
+          setPeople(removedPersonFromDataSrc(people, userId));
+        }
+        break;
+      default:
+        return people;
+    }
+  };
 
   return (
-    <div className='App'>
-      <h1>hi</h1>
+    <div className='app'>
+      <Header />
+      {people[2] ? (
+        <Person
+          key={people[2].id}
+          person={people[2]}
+          modifySuperficialChoices={modifySuperficialChoices}
+          likedUsers={likedUsers}
+        />
+      ) : (
+        <Lonely
+          activeUserImage={people[activeUser].image}
+          likedUsers={likedUsers}
+          superLikedUsers={superLikedUsers}
+        />
+      )}
     </div>
   );
 }
